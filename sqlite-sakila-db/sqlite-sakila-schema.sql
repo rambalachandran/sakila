@@ -40,6 +40,46 @@ CREATE TRIGGER actor_trigger_au AFTER UPDATE ON actor
  END
 ;
 
+CREATE TABLE actor_logs (
+  actor_id integer NOT NULL,
+  old_first_name VARCHAR(45) NOT NULL,
+  old_last_name VARCHAR(45) NOT NULL,
+  old_last_update TIMESTAMP NOT NULL,
+  new_first_name VARCHAR(45) NOT NULL,
+  new_last_name VARCHAR(45) NOT NULL,
+  new_last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  user_action VARCHAR(45) NOT NULL
+);
+
+CREATE TRIGGER log_actor_after_update 
+   AFTER UPDATE ON actor
+   WHEN old.first_name <> new.first_name
+        OR old.last_name <> new.last_name
+BEGIN
+	INSERT INTO actor_logs (
+		actor_id,
+		old_first_name,
+    old_last_name,
+    old_last_update,
+    new_first_name,
+    new_last_name,
+    new_last_update,
+		user_action
+	)
+VALUES
+	(
+		old.actor_id,
+    old.first_name,
+    old.last_name,
+    old.last_update,
+    new.first_name,
+    new.last_name,
+    DATETIME('NOW'),
+		'UPDATE'
+	) ;
+END;
+
+
  --
 -- Table structure for table country
 --
