@@ -27,7 +27,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
-        run: head -n 5 sqlite-sakila-db/sqlite-sakila-schema.sql
+        run: bash sqlite-sakila-db/recreate_sakila_sqlite.sh
 
 #       # Runs a single command using the runners shell
 #       - name: Run a one-line script
