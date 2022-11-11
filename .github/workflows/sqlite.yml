@@ -26,7 +26,8 @@ jobs:
       - uses: actions/checkout@v3
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
+      - name: Run SQLite Checks
+        if: github.event.pull_request.merged && contains( github.event.pull_request.labels.*.name, 'sqlite')
         run: bash sqlite-sakila-db/recreate_sakila_sqlite.sh
 
 #       # Runs a single command using the runners shell
