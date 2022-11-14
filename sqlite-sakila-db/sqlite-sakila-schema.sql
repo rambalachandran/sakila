@@ -237,6 +237,76 @@ UPDATE customer
 SET last_update = DATETIME('NOW')
 WHERE rowid = new.rowid;
 END;
+
+CREATE TABLE customer_logs (
+  customer_id INT NOT NULL,
+  create_date TIMESTAMP NOT NULL,
+  old_store_id INT NOT NULL,
+  old_first_name VARCHAR(45) NOT NULL,
+  old_last_name VARCHAR(45) NOT NULL,
+  old_email VARCHAR(50) DEFAULT NULL,
+  old_address_id INT NOT NULL,
+  old_active CHAR(1) DEFAULT 'Y' NOT NULL,
+  old_last_update TIMESTAMP NOT NULL,
+  new_store_id INT NOT NULL,
+  new_first_name VARCHAR(45) NOT NULL,
+  new_last_name VARCHAR(45) NOT NULL,
+  new_email VARCHAR(50) DEFAULT NULL,
+  new_address_id INT NOT NULL,
+  new_active CHAR(1) DEFAULT 'Y' NOT NULL,
+  new_last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  user_action VARCHAR(45) NOT NULL DEFAULT 'UPDATE'
+);
+
+CREATE TRIGGER log_customer_after_update
+AFTER
+UPDATE ON customer
+WHEN old.store_id <> new.store_id 
+  OR old.first_name <> new.first_name
+  OR old.last_name <> new.last_name
+  OR old.email <> new.email 
+  OR old.address_id <> new.address_id
+  OR old.active <> new.active BEGIN
+INSERT INTO customer_logs (
+  customer_id,
+  create_date,
+  old_store_id, 
+  old_first_name,
+  old_last_name, 
+  old_email ,
+  old_address_id ,
+  old_active ,
+  old_last_update ,
+  new_store_id ,
+  new_first_name , 
+  new_last_name ,
+  new_email ,
+  new_address_id ,
+  new_active ,
+  new_last_update ,
+  user_action
+)
+VALUES (
+  old.customer_id,
+  old.create_date,
+  old.store_id, 
+  old.first_name,
+  old.last_name, 
+  old.email ,
+  old.address_id ,
+  old.active ,
+  old.last_update ,
+  new.store_id ,
+  new.first_name , 
+  new.last_name ,
+  new.email ,
+  new.address_id ,
+  new.active ,
+  DATETIME('NOW'),
+  'UPDATE'
+);
+END;
+
 --
 -- Table structure for table film
 --
