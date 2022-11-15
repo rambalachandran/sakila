@@ -521,20 +521,38 @@ CREATE TABLE payment (
 );
 CREATE INDEX idx_fk_staff_id ON payment(staff_id);
 CREATE INDEX idx_fk_customer_id ON payment(customer_id);
-CREATE TRIGGER payment_trigger_ai
-AFTER
-INSERT ON payment BEGIN
-UPDATE payment
-SET last_update = DATETIME('NOW')
-WHERE rowid = new.rowid;
+
+-- CREATE TRIGGER payment_trigger_ai
+-- AFTER
+-- INSERT ON payment BEGIN
+-- UPDATE payment
+-- SET last_update = DATETIME('NOW')
+-- WHERE rowid = new.rowid;
+-- END;
+-- CREATE TRIGGER payment_trigger_au
+-- AFTER
+-- UPDATE ON payment BEGIN
+-- UPDATE payment
+-- SET last_update = DATETIME('NOW')
+-- WHERE rowid = new.rowid;
+-- END;
+
+CREATE TRIGGER block_payment_bu
+BEFORE UPDATE ON payment 
+BEGIN
+  SELECT RAISE(FAIL, "updates to records not allowed to payment table");
 END;
-CREATE TRIGGER payment_trigger_au
-AFTER
-UPDATE ON payment BEGIN
-UPDATE payment
-SET last_update = DATETIME('NOW')
-WHERE rowid = new.rowid;
+
+CREATE TRIGGER block_payment_bd
+BEFORE DELETE ON payment 
+BEGIN
+  SELECT RAISE(FAIL, "deletions to records not allowed to payment table");
 END;
+
+--
+-- Table structure for table rental
+--
+
 CREATE TABLE rental (
   rental_id INT NOT NULL,
   rental_date TIMESTAMP NOT NULL,
